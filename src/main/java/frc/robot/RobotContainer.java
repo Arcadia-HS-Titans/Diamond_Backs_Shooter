@@ -23,11 +23,7 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
     // The robot's subsystems
     private final DrivingSubsystem drivingSubsystem; // 4 PWM motors
-    private ArduinoSubsystem arduinoSubsystem; // USB on RoboRIO
-    //private ColorSensorSubsystem colorSubsystem; // I2C port on RIO
-    private final BallShooterSubsystem ballShooterSubsystem;
-    private final IntakeSubsystem intakeSubsystem;
-
+    private final ShootingSubsystem shootingSubsystem;
     // Devices
     public final Joystick joystick;
 
@@ -48,14 +44,10 @@ public class RobotContainer {
 
         Shuffleboard.addEventMarker("A", "a", EventImportance.kNormal);
         this.joystick = new Joystick(0);
+        this.shootingSubsystem = new ShootingSubsystem();
         this.drivingSubsystem = new DrivingSubsystem();
-        //this.colorSubsystem = new ColorSensorSubsystem();
-        this.ballShooterSubsystem = new BallShooterSubsystem();
-        this.intakeSubsystem = new IntakeSubsystem();
-        //this.arduinoSubsystem = new ArduinoSubsystem();
-        this.teleopCommand = new DrivingTeleopCommand(
-                drivingSubsystem, joystick /*colorSubsystem,*//*arduinoSubsystem*/, ballShooterSubsystem, intakeSubsystem);
-        this.autoCommand = new AutoCommand(/*arduinoSubsystem*/ /*colorSubsystem,*/ drivingSubsystem, ballShooterSubsystem, intakeSubsystem);
+        this.teleopCommand = new DrivingTeleopCommand(drivingSubsystem, shootingSubsystem);
+        this.autoCommand = new AutoCommand(drivingSubsystem);
         // Configure default commands
         // Set the default drive command to split-stick arcade drive
         drivingSubsystem.setDefaultCommand(teleopCommand);

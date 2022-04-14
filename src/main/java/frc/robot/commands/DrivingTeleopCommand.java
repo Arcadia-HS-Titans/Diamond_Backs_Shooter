@@ -6,9 +6,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * https://docs.wpilib.org/en/stable/docs/software/commandbased/commands.html#simple-command-example
  * https://github.com/wpilibsuite/allwpilib/blob/main/wpilibjExamples/src/main/java/edu/wpi/first/wpilibj/examples/hatchbottraditional/commands/DefaultDrive.java
@@ -16,30 +13,16 @@ import java.util.List;
 public class DrivingTeleopCommand extends CommandBase {
 
     private final Joystick joystick;
-    private final Joystick gamepad;
 
     private final DrivingSubsystem drivingSubsystem;
-    //private final ColorSensorSubsystem colorSensorSubSystem;
-    private ArduinoSubsystem arduinoSubsystem;
-    private final BallShooterSubsystem ballShooterSubsystem;
-    private final IntakeSubsystem intakeSubsystem;
+    private final ShootingSubsystem shootingSubsystem;
 
-    public DrivingTeleopCommand(
-            DrivingSubsystem drivingSubsystem, Joystick joystick /*ColorSensorSubsystem colorSensorSubSystem,*/
-            /*ArduinoSubsystem arduinoSubsystem*/, BallShooterSubsystem ballShooterSubsystem,
-            IntakeSubsystem intakeSubsystem) {
+    public DrivingTeleopCommand(DrivingSubsystem drivingSubsystem, ShootingSubsystem shootingSubsystem) {
         this.drivingSubsystem = drivingSubsystem;
-        //this.colorSensorSubSystem = colorSensorSubSystem;
-        this.joystick = joystick;
-        this.gamepad = new Joystick(1);
-        //this.arduinoSubsystem = arduinoSubsystem;
-        this.ballShooterSubsystem = ballShooterSubsystem;
-        this.intakeSubsystem = intakeSubsystem;
+        this.joystick = new Joystick(0);
+        this.shootingSubsystem = shootingSubsystem;
         addRequirements(drivingSubsystem);
-        //addRequirements(colorSensorSubSystem);
-        //addRequirements(arduinoSubsystem);
-        addRequirements(ballShooterSubsystem);
-        addRequirements(intakeSubsystem);
+        addRequirements(shootingSubsystem);
     }
 
     /**Logitech contro
@@ -69,48 +52,13 @@ public class DrivingTeleopCommand extends CommandBase {
                 joystick.getZ() * Constants.MOTOR_POWER_PERCENT,
                 joystick.getY() * Constants.MOTOR_POWER_PERCENT
         );
-
-        double value = joystick.getRawAxis(3);
-        value *= -1;
-        value = (value/2)+0.5;
-        DriverStation.reportWarning("RPM (Velocity): " + ballShooterSubsystem.getEncoder().getVelocity(), false);
-        DriverStation.reportWarning("Percentage: " + value, false);
-
-
-        if(gamepad.getRawButton(1)) {
-            //B on the logitech controller is pressed, taken from GLFW
-            ballShooterSubsystem.fire(.42);
-        } else if(gamepad.getRawButton(4)) {
-            ballShooterSubsystem.fire(.9);
+        double value = ((-joystick.getRawAxis(3))/2)+.5;
+        DriverStation.reportWarning(value + "", false);
+        DriverStation.reportWarning("RPM: " + shootingSubsystem.rightBus.getEncoder().getVelocity(), false);
+        if(joystick.getRawButton(1)) {
+            shootingSubsystem.fire(value);
         } else {
-            ballShooterSubsystem.fire(0);
+            shootingSubsystem.fire(0);
         }
-
-        if(gamepad.getRawButton(6)) {
-            intakeSubsystem.elevateBall(1);
-        } else {
-            intakeSubsystem.elevateBall(0);
-        }
-
-        if(gamepad.getRawAxis(2) > .5)
-            intakeSubsystem.enterBall(0);
-        else {
-            if(joystick.getRawButton(1))
-                intakeSubsystem.enterBall(1, false);
-            else
-                intakeSubsystem.enterBall(1);
-        }
-        ballShooterSubsystem.turnSusan(gamepad.getRawAxis(0) * .7);
-
-        //Log velocity
-        /*ArduinoSubsystem.PixyPacket read = arduinoSubsystem.read();
-        if(!(read.x == 0 && read.y == 0 && read.scale == 0))
-            if (read.scale <= 150) {
-                ballShooterSubsystem.turnSusan(read.x-1);
-                System.out.println(Arrays.toString(new double[]{read.x, read.y, read.scale}));
-            } else {
-                System.out.println(Arrays.toString(new double[]{read.x, read.y, read.scale}));
-            }
-        System.out.println(ballShooterSubsystem.getVelocity());*/
     }
 }
