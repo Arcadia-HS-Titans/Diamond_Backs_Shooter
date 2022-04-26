@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+
 public class Constants {
     /**------PWM Ports-------*/
     public static final int GREEN_MOTOR_PORT = 3;
@@ -9,7 +11,8 @@ public class Constants {
 
     public static final int BOTTOM_INTAKE_PORT = 5;
     public static final int TOP_INTAKE_PORT = 4;
-    public static final int SUSAN_ROTATION_PORT = 6;
+
+    public static final int HOPPER_PORT = 6;
 
 
     /**------DIO Ports-------*/
